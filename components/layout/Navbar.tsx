@@ -21,7 +21,7 @@ export default function Navbar() {
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
               <BarChart3 className="h-8 w-8 text-yellow-500" />
-              <span className="text-xl font-bold text-white">Automated AI trades</span>
+              <span className="text-xl font-bold text-white">Aurex Capital</span>
             </Link>
           </div>
 

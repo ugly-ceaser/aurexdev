@@ -2,7 +2,223 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --white: #ffffff;
+  --pearl: #f8f7f5;
+  --light: #f0eee9;
+  --mist: #e8e5df;
+  --stone: #c8c4bb;
+  --text-primary: #0f0e0d;
+  --text-secondary: #4a4844;
+  --text-muted: #9a9690;
+  --blue: #4169e1;
+  --violet: #7c3aed;
+  --pink: #e040fb;
+  --cyan: #00d4ff;
+  --grad-main: #7c3aed;
+  --grad-soft: rgba(124, 58, 237, 0.05);
+  --grad-glow: radial-gradient(ellipse at 50% 50%, rgba(124, 58, 237, 0.08) 0%, transparent 70%);
+  --shadow-glass: 0 8px 32px rgba(65,105,225,0.08), 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-card: 0 20px 60px rgba(65,105,225,0.1), 0 4px 16px rgba(0,0,0,0.05);
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-xl: 40px;
+}
+
 body {
-  background-color: #000000;
-  color: #ffffff;
+  background-color: var(--pearl);
+  color: var(--text-primary);
+  font-family: var(--font-dm), sans-serif;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-syne {
+  font-family: var(--font-syne), sans-serif;
+}
+
+/* CUSTOM AMBIENT BACKGROUND GLOWS */
+.bg-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.25;
+  animation: blobFloat 15s ease-in-out infinite;
+}
+
+.blob-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(65,105,225,0.4), transparent);
+  top: -100px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.blob-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(124,58,237,0.4), transparent);
+  top: 30%;
+  right: -50px;
+  animation-delay: -4s;
+}
+
+.blob-3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(224,64,251,0.3), transparent);
+  bottom: 20%;
+  left: 20%;
+  animation-delay: -8s;
+}
+
+.blob-4 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(0,212,255,0.2), transparent);
+  bottom: 10%;
+  right: 15%;
+  animation-delay: -6s;
+}
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.03); }
+  50% { transform: translate(-20px, 30px) scale(0.97); }
+  75% { transform: translate(15px, 10px) scale(1.01); }
+}
+
+/* PREMIUM SAAS GLASSMORPHISM CLASSES */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(24px) saturate(1.8);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-glass);
+}
+
+.glass-panel-heavy {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(32px) saturate(2);
+  -webkit-backdrop-filter: blur(32px) saturate(2);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-card);
+}
+
+.text-gradient {
+  background: var(--grad-main);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ENDLESS FLOAT ANIMATIONS */
+.animate-float-a { animation: floatA 6s ease-in-out infinite; }
+.animate-float-b { animation: floatB 7s ease-in-out infinite; }
+.animate-float-c { animation: floatC 5.5s ease-in-out infinite; }
+.animate-float-d { animation: floatD 8s ease-in-out infinite; }
+
+@keyframes floatA { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-16px) rotate(1deg)} }
+@keyframes floatB { 0%,100%{transform:translateY(0) rotate(2deg)} 50%{transform:translateY(14px) rotate(-1deg)} }
+@keyframes floatC { 0%,100%{transform:translateY(0) rotate(1deg)} 50%{transform:translateY(-12px) rotate(-2deg)} }
+@keyframes floatD { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(10px) rotate(2deg)} }
+
+/* INFINITE TICKER MARQUEE */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee 40s linear infinite reverse;
+}
+
+/* HIDE DEFAULT CURSOR ONLY WHEN CUSTOM CURSOR IS FULLY ACTIVE AND MOUNTED */
+.custom-cursor-active,
+.custom-cursor-active body,
+.custom-cursor-active a, 
+.custom-cursor-active button, 
+.custom-cursor-active input, 
+.custom-cursor-active select, 
+.custom-cursor-active textarea, 
+.custom-cursor-active [role="button"], 
+.custom-cursor-active .cursor-pointer,
+.custom-cursor-active .interactive-card {
+  cursor: none !important;
+}
+
+
+/* FORCE BUTTONS, BADGES, AND GRAPHICS WITH GRADIENTS TO SOLID COLORS */
+button[class*="bg-gradient-"],
+.badge[class*="bg-gradient-"],
+span[class*="bg-gradient-"] {
+  background-image: none !important;
+  background-color: var(--violet) !important;
+}
+
+/* Support proper hover actions on solid elements */
+button[class*="bg-gradient-"]:hover,
+.badge[class*="bg-gradient-"]:hover {
+  background-image: none !important;
+  background-color: #6b2fd5 !important;
+}
+
+/* Retain visual diversity for group/avatar backgrounds */
+.h-9.w-9.rounded-full[class*="bg-gradient-"] {
+  background-color: var(--blue) !important;
+}
+
+/* Force all text gradients to flat colors */
+[class*="text-transparent"][class*="bg-clip-text"] {
+  background-image: none !important;
+  color: var(--violet) !important;
+  -webkit-text-fill-color: var(--violet) !important;
+}
+
+/* Keep structural separator line lines clean */
+[class*="bg-gradient-"][class*="h-[1px]"],
+[class*="bg-gradient-"][class*="w-[1px]"] {
+  background-color: rgba(124, 58, 237, 0.15) !important;
+}
+
+/* ==========================================
+   GLOBAL HIGH-CONTRAST FORM INPUT ELEMENTS
+   ========================================== */
+input, 
+textarea, 
+select {
+  color: var(--text-primary) !important; /* Deep charcoal #0f0e0d */
+  background-color: rgba(255, 255, 255, 0.95) !important; /* solid white backdrop */
+  border: 1px solid rgba(154, 150, 144, 0.3) !important; /* soft dark stone border */
+}
+
+option {
+  color: var(--text-primary) !important;
+  background-color: #ffffff !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-secondary) !important; /* High contrast dark-gray readable placeholder */
+  opacity: 0.65 !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--violet) !important;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15) !important;
 }

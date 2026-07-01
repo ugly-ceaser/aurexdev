@@ -12,13 +12,13 @@ export function getEmailTemplate({ subject, message }: { subject: string; messag
       </head>
       <body>
         <div class="container">
-          <div class="header">Automated AI trades</div>
+          <div class="header">Aurex Capital</div>
           <div class="content">
             <h2>${subject}</h2>
             <p>${message}</p>
           </div>
           <div class="footer">
-            &copy; ${new Date().getFullYear()} Automated AI trades. All rights reserved.
+            &copy; ${new Date().getFullYear()} Aurex Capital. All rights reserved.
           </div>
         </div>
       </body>

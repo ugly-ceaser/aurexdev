@@ -1,133 +1,108 @@
-"use client";
+'use client';
+
 import React, { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Table } from '@/components/ui/table';
-import { cn } from '@/lib/utils';
 import DashboardLayout from '@/components/layout/DashboardLayout';
+import { Copy, ExternalLink, Loader2, AlertCircle, Sparkles, CheckCircle2, TrendingUp, Clock, Calendar, Check } from 'lucide-react';
 
-// Types
 interface Package {
   _id: string;
   name: string;
   minAmount: number;
   maxAmount: number;
-  roi: number;
+  roiPercentage: number;
 }
 
 interface Deposit {
   _id: string;
-  package: Package;
+  packageId: Package;
   amount: number;
-  transactionHash: string;
+  txHash: string;
   status: string;
   createdAt: string;
 }
 
 export default function DepositsPage() {
-  // ...existing code...
-  // Declare filteredDeposits just before return
-  // ...existing code...
-  // Place this immediately before return:
-  // const filteredDeposits: Deposit[] = deposits.filter((dep: Deposit) => {
-  //   const matchesStatus = filterStatus ? dep.status === filterStatus : true;
-  //   const matchesSearch = search
-  //     ? dep.transactionHash.toLowerCase().includes(search.toLowerCase()) ||
-  //       dep.status.toLowerCase().includes(search.toLowerCase())
-  //     : true;
-  //   return matchesStatus && matchesSearch;
-  // });
-
-  // ...existing code...
-
-  // ...existing code...
-  // (Move filteredDeposits to just before return)
-
-    // Wallet address fetched from admin
-    const [walletAddress, setWalletAddress] = useState('');
-    useEffect(() => {
-      fetch('/api/admin/deposit-wallet')
-        .then(res => res.json())
-        .then(data => setWalletAddress(data.address || ''));
-    }, []);
-
-  // Place this immediately before return:
-  // const filteredDeposits: Deposit[] = deposits.filter((dep: Deposit) => {
-  //   const matchesStatus = filterStatus ? dep.status === filterStatus : true;
-  //   const matchesSearch = search
-  //     ? dep.transactionHash.toLowerCase().includes(search.toLowerCase()) ||
-  //       dep.status.toLowerCase().includes(search.toLowerCase())
-  //     : true;
-  //   return matchesStatus && matchesSearch;
-  // });
-
-  // ...existing code...
-
-  // Place filteredDeposits just before return
-  // ...existing code...
-  // filteredDeposits should be declared just before return
-  // State for deposit history table
-  const [search, setSearch] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [page, setPage] = useState(1);
-  const pageSize = 10;
-
-  // ...existing code...
-  // deposits state must be declared before filteredDeposits
-  // ...existing code...
-  // Move filteredDeposits to just before return
-
-  // ...existing code...
-
-  // Place this before return statement:
-  // const filteredDeposits = deposits.filter(...)
+  const { data: session } = useSession();
   const [packages, setPackages] = useState<Package[]>([]);
   const [deposits, setDeposits] = useState<Deposit[]>([]);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [coinType, setCoinType] = useState('USDT');
+  const [network, setNetwork] = useState('TRC20');
+  
+  // Form state
   const [selectedPackage, setSelectedPackage] = useState('');
   const [amount, setAmount] = useState('');
   const [transactionHash, setTransactionHash] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  // Example wallet address removed; using state variable from useState and useEffect above
+  const [success, setSuccess] = useState('');
+  const [copied, setCopied] = useState(false);
+  
+  // Filter state
+  const [search, setSearch] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
 
   useEffect(() => {
-    // Fetch packages
-    fetch('/api/packages')
-      .then(res => res.json())
-      .then(data => setPackages(data))
-      .catch(() => setPackages([]));
-    // Fetch deposits
-    fetch('/api/deposits')
-      .then(res => res.json())
-      .then(data => setDeposits(data))
-      .catch(() => setDeposits([]));
+    fetchData();
   }, []);
 
-  // ...existing code...
+  const fetchData = async () => {
+    try {
+      const [packagesRes, depositsRes, walletRes] = await Promise.all([
+        fetch('/api/packages'),
+        fetch('/api/deposits'),
+        fetch('/api/admin/deposit-wallet')
+      ]);
+      
+      if (packagesRes.ok) setPackages(await packagesRes.json());
+      if (depositsRes.ok) setDeposits(await depositsRes.json());
+      if (walletRes.ok) {
+        const walletData = await walletRes.json();
+        setWalletAddress(walletData.address || '');
+        setCoinType(walletData.coinType || 'USDT');
+        setNetwork(walletData.network || 'TRC20');
+      }
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
+    
     try {
       const res = await fetch('/api/deposits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           packageId: selectedPackage,
-          amount,
+          amount: Number(amount),
           transactionHash,
         }),
       });
-      if (!res.ok) throw new Error('Failed to submit deposit');
+      
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to submit deposit');
+      }
+      
       const newDeposit = await res.json();
       setDeposits([newDeposit, ...deposits]);
       setSelectedPackage('');
       setAmount('');
       setTransactionHash('');
+      setSuccess('Deposit request submitted successfully! Awaiting admin approval.');
+      setTimeout(() => setSuccess(''), 5000);
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -135,228 +110,339 @@ export default function DepositsPage() {
     }
   };
 
-  const totalDeposits = deposits.reduce((sum, d) => sum + d.amount, 0);
-
-  // Helper for package details
-  const packageDetails = {
-    Starter: { min: 2000, max: 49999, roi: 12 },
-    Gold: { min: 50000, max: 199999, roi: 15 }
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  // Find selected package details
-  const selectedDetails = packages.find(pkg => pkg._id === selectedPackage);
-  const minAmount = selectedDetails?.minAmount || 0;
-  const maxAmount = selectedDetails?.maxAmount || 0;
-  const roi = selectedDetails?.roi || 0;
+  // Get selected package details
+  const selectedPkg = packages.find(pkg => pkg._id === selectedPackage);
+  const minAmount = selectedPkg?.minAmount || 0;
+  const maxAmount = selectedPkg?.maxAmount || 0;
+  const roi = selectedPkg?.roiPercentage || 0;
 
   // Validation
   const isAmountValid = amount && Number(amount) >= minAmount && Number(amount) <= maxAmount;
   const isFormValid = selectedPackage && isAmountValid && transactionHash;
 
-  // Filtered deposits (declare after deposits is assigned)
-  const filteredDeposits: Deposit[] = deposits.filter((dep: Deposit) => {
-    const matchesStatus = filterStatus ? dep.status === filterStatus : true;
+  // Filtered deposits
+  const filteredDeposits = deposits.filter((dep) => {
+    const matchesStatus = filterStatus ? dep.status.toLowerCase() === filterStatus.toLowerCase() : true;
     const matchesSearch = search
-      ? dep.transactionHash.toLowerCase().includes(search.toLowerCase()) ||
-        dep.status.toLowerCase().includes(search.toLowerCase())
+      ? dep.txHash.toLowerCase().includes(search.toLowerCase()) ||
+        dep.status.toLowerCase().includes(search.toLowerCase()) ||
+        dep.packageId?.name.toLowerCase().includes(search.toLowerCase())
       : true;
     return matchesStatus && matchesSearch;
   });
 
+  const paginatedDeposits = filteredDeposits.slice((page - 1) * pageSize, page * pageSize);
+  const totalPages = Math.ceil(filteredDeposits.length / pageSize) || 1;
+
+  // Calculate stats
+  const totalApprovedAmount = deposits
+    .filter(d => d.status.toLowerCase() === 'approved')
+    .reduce((sum, d) => sum + d.amount, 0);
+
+  const pendingCount = deposits.filter(d => d.status.toLowerCase() === 'pending').length;
+
   return (
     <DashboardLayout>
-      <a href="/dashboard" className="text-xs text-blue-600 hover:underline w-fit">← Back to Dashboard</a>
-
-      {/* Deposit Instructions */}
-      <div className="bg-yellow-100/10 border-l-4 border-yellow-500 p-4 mb-6 rounded">
-        <h2 className="text-lg font-bold text-yellow-600 mb-2">How to Make a Deposit</h2>
-        <ol className="list-decimal ml-6 text-sm text-gray-300 space-y-1">
-          <li>Select your preferred investment package.</li>
-          <li>Enter the amount you wish to deposit (must be within the package range).</li>
-          <li>Send your deposit to the admin wallet address shown below.</li>
-          <li>Copy your crypto transaction hash (TxID) after sending.</li>
-          <li>Paste the transaction hash in the form and submit your deposit request.</li>
-          <li>Your deposit will be reviewed and approved by the admin.</li>
-          <li>Once approved, your investment will start earning daily ROI.</li>
-        </ol>
-        <div className="mt-2 text-xs text-gray-400">Need help? Contact support for assistance.</div>
-      </div>
-
-      {/* Responsive Two-Column Layout */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Left Panel: Deposit Form */}
+      <div className="space-y-8 text-left">
+        
+        {/* Header */}
         <div>
-          <div className="bg-white/5 rounded-lg shadow p-6">
-            <div className="text-lg font-semibold mb-4">Deposit Form</div>
+          <h1 className="font-syne text-3xl font-extrabold text-[#0f0e0d] tracking-tight">Make a Deposit</h1>
+          <p className="text-sm font-light text-gray-500">Fund your choice yield pool and watch your positions grow automatically</p>
+        </div>
+
+        {/* Instructions */}
+        <div className="bg-gradient-to-tr from-purple-100/30 to-pink-100/20 border border-purple-100 rounded-[28px] p-6 shadow-sm">
+          <h2 className="font-syne text-lg font-bold text-[#7c3aed] mb-3 flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-[#e040fb]" />
+            Telemetry Funding Instructions
+          </h2>
+          <ol className="list-decimal ml-6 text-sm text-gray-600 space-y-1.5 font-light">
+            <li>Select your preferred investment yield pool tier below.</li>
+            <li>Enter the target principal amount you wish to allocate (must fit inside pool range).</li>
+            <li>Transfer your digital assets to the designated admin wallet listed below.</li>
+            <li>Copy your transaction hash (TxID) after finalizing the transfer.</li>
+            <li>Input the hash inside the verification block and execute submit.</li>
+          </ol>
+        </div>
+
+        {/* Stats Grid */}
+        {deposits.length > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="glass-panel rounded-[24px] p-6 shadow-sm border border-purple-50">
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Telemetry requests</span>
+              <p className="font-syne text-2xl font-bold text-gray-900">{deposits.length}</p>
+            </div>
+            <div className="glass-panel rounded-[24px] p-6 shadow-sm border border-purple-50">
+              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest block mb-1">Approved Principal</span>
+              <p className="font-syne text-2xl font-bold text-emerald-600">${totalApprovedAmount.toLocaleString()}</p>
+            </div>
+            <div className="glass-panel rounded-[24px] p-6 shadow-sm border border-purple-50">
+              <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest block mb-1">Pending approval</span>
+              <p className="font-syne text-2xl font-bold text-amber-600">{pendingCount}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Main Columns */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* New Deposit Form */}
+          <div className="glass-panel rounded-[28px] p-6 shadow-sm border border-purple-50">
+            <h2 className="font-syne text-xl font-bold text-gray-900 mb-6">Initialize New Allocation</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-6">
+              
               {/* Package Selector */}
-              <div className="mb-4">
-                <Label htmlFor="package">Select Package</Label>
-                <div className="flex gap-4 mt-2">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-wider text-gray-400">Select Yield Pool</Label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1">
                   {packages.map(pkg => (
-                    <div
+                    <button
                       key={pkg._id}
-                      className={`border rounded-lg p-3 cursor-pointer flex-1 ${selectedPackage === pkg._id ? 'border-yellow-500 shadow-lg' : 'border-gray-700'}`}
+                      type="button"
                       onClick={() => setSelectedPackage(pkg._id)}
+                      className={`p-4 rounded-[20px] border-2 text-left transition-all duration-300 ${
+                        selectedPackage === pkg._id
+                          ? 'border-[#7c3aed] bg-[#7c3aed]/5 shadow-sm'
+                          : 'border-purple-50 bg-white/50 hover:border-purple-100'
+                      }`}
                     >
-                      <div className="font-bold text-lg">{pkg.name}</div>
-                      <div className="text-xs text-gray-400">Min ${pkg.minAmount} – Max ${pkg.maxAmount}</div>
-                      <div className="text-xs text-yellow-500">{pkg.roi}% Daily ROI</div>
-                    </div>
+                      <div className="font-syne font-bold text-md text-gray-800">{pkg.name}</div>
+                      <div className="text-[11px] text-gray-400 font-light mt-1">
+                        ${pkg.minAmount.toLocaleString()} - ${pkg.maxAmount.toLocaleString()}
+                      </div>
+                      <div className="text-xs text-[#7c3aed] font-bold mt-1">
+                        {pkg.roiPercentage}% Daily ROI
+                      </div>
+                    </button>
                   ))}
                 </div>
               </div>
 
-              {/* Deposit Amount */}
-              <div className="mb-4">
-                <Label htmlFor="amount">Deposit Amount (USD)</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="font-bold text-gray-400">$</span>
+              {/* Amount */}
+              <div className="space-y-2">
+                <Label htmlFor="amount" className="text-xs font-bold uppercase tracking-wider text-gray-400">Principal Amount (USD)</Label>
+                <div className="relative flex items-center mt-1">
+                  <span className="absolute left-4 font-bold text-gray-400">$</span>
                   <Input
                     id="amount"
                     type="number"
                     value={amount}
-                    onChange={e => setAmount(e.target.value)}
-                    required
-                    className="flex-1"
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder={selectedPkg ? `${minAmount} - ${maxAmount}` : 'Please select yield pool tier...'}
+                    disabled={!selectedPackage}
+                    className="rounded-2xl border-purple-100 bg-white/50 py-6 pl-8 pr-4 text-sm focus-visible:ring-purple-200"
                   />
                 </div>
-                <div className="text-xs text-gray-500 mt-1">Enter an amount within your selected package range.</div>
-                {!isAmountValid && amount && (
-                  <div className="text-xs text-red-500 mt-1">Amount must be between ${minAmount} and ${maxAmount}.</div>
+                {amount && !isAmountValid && selectedPackage && (
+                  <p className="text-xs text-rose-500 mt-1">
+                    Target must reside inside pool limits: ${minAmount.toLocaleString()} to ${maxAmount.toLocaleString()}
+                  </p>
+                )}
+                {selectedPkg && isAmountValid && (
+                  <p className="text-xs text-emerald-600 mt-1 font-semibold">
+                    Expected yield: ${((Number(amount) || 0) * roi / 100).toFixed(2)} / daily
+                  </p>
                 )}
               </div>
 
-              {/* Transaction Hash */}
-              <div className="mb-4">
-                <Label htmlFor="txHash">Transaction Hash (TxID)</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <Input
-                    id="txHash"
-                    value={transactionHash}
-                    onChange={e => setTransactionHash(e.target.value)}
-                    required
-                    className="flex-1"
-                  />
-                  {/* Copy-paste icon placeholder */}
-                  <button type="button" className="p-2 text-gray-400 hover:text-yellow-500" onClick={() => navigator.clipboard.writeText(transactionHash)}>
-                    <span role="img" aria-label="copy">📋</span>
-                  </button>
+              {/* Wallet Address & Details */}
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-xs font-bold uppercase tracking-wider text-gray-400">Deposit Funding Method</Label>
+                  <div className="grid grid-cols-2 gap-3 mt-1.5 mb-3">
+                    <div className="p-3 bg-purple-50/50 border border-purple-100 rounded-xl">
+                      <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Transfer Asset</span>
+                      <span className="text-sm font-bold text-gray-800">{coinType}</span>
+                    </div>
+                    <div className="p-3 bg-purple-50/50 border border-purple-100 rounded-xl">
+                      <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Required Network</span>
+                      <span className="text-sm font-bold text-[#7c3aed]">{network}</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500 mt-1">Paste your crypto transaction hash for verification.</div>
+
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-bold uppercase tracking-wider text-gray-400">Admin Vault Address ({coinType} - {network})</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={walletAddress}
+                      readOnly
+                      className="flex-1 font-mono text-xs rounded-2xl border-purple-100 bg-gray-50 py-6 px-4"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => copyToClipboard(walletAddress)}
+                      className="rounded-2xl h-auto border-purple-100 hover:bg-purple-50"
+                    >
+                      {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-gray-400 font-light">Transfer exactly the entered amount using the {network} network to this secure vault address</p>
+                </div>
               </div>
 
-              {/* Wallet Info */}
-              <div className="mb-4">
-                <Label>Admin Wallet Address</Label>
-                <div className="flex items-center gap-2 mt-1">
-                  <Input value={walletAddress} readOnly className="flex-1 font-mono" />
-                  <button type="button" className="p-2 text-gray-400 hover:text-yellow-500" onClick={() => navigator.clipboard.writeText(walletAddress)}>
-                    <span role="img" aria-label="copy">📋</span>
-                  </button>
-                </div>
-                <div className="text-xs text-gray-500 mt-1">Send your deposit to this address.</div>
+              {/* Tx Hash */}
+              <div className="space-y-2">
+                <Label htmlFor="txHash" className="text-xs font-bold uppercase tracking-wider text-gray-400">Blockchain Transaction ID (TxHash)</Label>
+                <Input
+                  id="txHash"
+                  value={transactionHash}
+                  onChange={(e) => setTransactionHash(e.target.value)}
+                  placeholder="Paste transaction hash / TxID..."
+                  className="rounded-2xl border-purple-100 bg-white/50 py-6 px-4 text-sm font-mono focus-visible:ring-purple-200"
+                />
               </div>
 
-              {/* Submit Button */}
+              {/* Success/Error Alerts */}
+              {error && (
+                <div className="px-4 py-3 rounded-2xl text-xs font-semibold border bg-red-500/10 border-red-500/30 text-rose-600">
+                  {error}
+                </div>
+              )}
+              {success && (
+                <div className="px-4 py-3 rounded-2xl text-xs font-semibold border bg-emerald-500/10 border-emerald-500/30 text-emerald-600">
+                  {success}
+                </div>
+              )}
+
+              {/* Submit */}
               <Button
                 type="submit"
-                className="w-full bg-yellow-500 text-white py-2 rounded font-bold text-lg mt-4"
+                className="w-full rounded-2xl py-6 bg-gradient-to-r from-[#4169e1] via-[#7c3aed] to-[#e040fb] text-white border-none font-semibold shadow-lg shadow-purple-200 hover:opacity-95 transition-opacity"
                 disabled={!isFormValid || loading}
-                onClick={handleSubmit}
               >
-                {loading ? 'Submitting...' : 'Submit Deposit Request'}
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Verifying transfer...
+                  </>
+                ) : (
+                  'Deploy Principal Allocation'
+                )}
               </Button>
-              {error && <div className="bg-red-500/10 border border-red-500 text-red-500 px-4 py-2 rounded-md text-sm mt-2">{error}</div>}
-              {/* If you want to show a success message, ensure showSuccess is defined in your state */}
-              {/* {showSuccess && <div className="bg-green-500/10 border border-green-500 text-green-500 px-4 py-2 rounded-md text-sm mt-2">Deposit successful! Your funds will be credited soon.</div>} */}
-            <div className="bg-white/5 rounded-lg shadow p-6">
-              <div className="text-lg font-semibold mb-4">Deposit History</div>
-              {/* Search/filter bar */}
-              <div className="mb-4 flex flex-col md:flex-row gap-2 items-center">
-                <input
+            </form>
+          </div>
+
+          {/* Deposit Ledger */}
+          <div className="glass-panel rounded-[28px] p-6 shadow-sm border border-purple-50 flex flex-col justify-between">
+            <div>
+              <h2 className="font-syne text-xl font-bold text-gray-900 mb-6">Deposit Ledgers</h2>
+              
+              {/* Search/Filter block */}
+              <div className="flex gap-2 mb-6">
+                <Input
                   type="text"
-                  placeholder="Search by Tx Hash or Status..."
-                  className="border rounded px-2 py-1 w-full md:w-1/2"
+                  placeholder="Search hashes..."
                   value={search}
-                  onChange={e => setSearch(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="flex-1 rounded-2xl border-purple-100 bg-white/50 py-5 px-4 text-xs focus-visible:ring-purple-200"
                 />
                 <select
-                  className="border rounded px-2 py-1"
+                  className="border border-purple-100 rounded-2xl px-3 bg-white text-gray-700 text-xs font-medium focus-visible:ring-purple-200 outline-none"
                   value={filterStatus}
-                  onChange={e => setFilterStatus(e.target.value)}
+                  onChange={(e) => setFilterStatus(e.target.value)}
                 >
-                  <option value="">All Statuses</option>
-                  <option value="PENDING">Pending</option>
-                  <option value="APPROVED">Approved</option>
-                  <option value="DECLINED">Declined</option>
+                  <option value="">All States</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="declined">Declined</option>
                 </select>
               </div>
 
               {/* Table */}
               <div className="overflow-x-auto">
-                <table className="min-w-full text-sm">
-                  <thead>
-                    <tr className="bg-gray-900 text-gray-400">
-                      <th className="p-2">Package</th>
-                      <th className="p-2">Amount ($)</th>
-                      <th className="p-2">Tx Hash</th>
-                      <th className="p-2">Status</th>
-                      <th className="p-2">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredDeposits.slice((page-1)*pageSize, page*pageSize).map((dep: Deposit) => (
-                      <tr key={dep._id} className="border-b border-gray-800">
-                        <td className="p-2">{dep.package?.name || '-'}</td>
-                        <td className="p-2">${dep.amount}</td>
-                        <td className="p-2">
-                          <a
-                            href={`https://etherscan.io/tx/${dep.transactionHash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 underline"
+                {paginatedDeposits.length === 0 ? (
+                  <div className="text-center text-gray-400 py-12 font-light">
+                    No matching deposit transactions found.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {paginatedDeposits.map((dep) => (
+                      <div 
+                        key={dep._id} 
+                        className="p-4 rounded-2xl bg-white/70 border border-purple-50/50 flex items-center justify-between"
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-syne font-bold text-sm text-gray-800">
+                              {dep.packageId?.name || 'Yield Pool'}
+                            </span>
+                            <span className="text-[10px] text-gray-400">•</span>
+                            <span className="text-[10px] text-gray-400 font-mono">
+                              {dep.txHash ? `${dep.txHash.slice(0, 8)}...` : 'Internal'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1 text-[10px] text-gray-400 font-light">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(dep.createdAt).toLocaleDateString()}
+                          </div>
+                        </div>
+
+                        <div className="text-right space-y-1">
+                          <p className="font-syne font-bold text-gray-800 text-sm">
+                            +${dep.amount.toLocaleString()}
+                          </p>
+                          <Badge
+                            className={`text-[9px] uppercase tracking-wider font-bold border-none px-2 rounded-full ${
+                              dep.status === 'approved'
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : dep.status === 'declined'
+                                ? 'bg-rose-50 text-rose-700'
+                                : 'bg-amber-50 text-amber-700'
+                            }`}
                           >
-                            {dep.transactionHash.slice(0, 10)}...{/* show short hash */}
-                          </a>
-                        </td>
-                        <td className="p-2">
-                          {dep.status === 'APPROVED' && <span className="bg-green-600 text-white px-2 py-1 rounded">Approved ✅</span>}
-                          {dep.status === 'PENDING' && <span className="bg-yellow-600 text-white px-2 py-1 rounded">Pending</span>}
-                          {dep.status === 'DECLINED' && <span className="bg-red-600 text-white px-2 py-1 rounded">Declined ❌</span>}
-                        </td>
-                        <td className="p-2">{new Date(dep.createdAt).toLocaleString()}</td>
-                      </tr>
+                            {dep.status}
+                          </Badge>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              <div className="flex justify-between items-center mt-4">
-                <div className="text-xs text-gray-400">
-                  Page {page} of {Math.ceil(filteredDeposits.length / pageSize)}
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="px-2 py-1 bg-gray-800 text-white rounded disabled:opacity-50"
-                    disabled={page === 1}
-                    onClick={() => setPage(page-1)}
-                  >Prev</button>
-                  <button
-                    className="px-2 py-1 bg-gray-800 text-white rounded disabled:opacity-50"
-                    disabled={page === Math.ceil(filteredDeposits.length / pageSize)}
-                    onClick={() => setPage(page+1)}
-                  >Next</button>
-                </div>
-              </div>
-
-              {/* Totals */}
-              <div className="mt-4 text-right text-sm text-gray-400">
-                Total Deposits Approved: <span className="font-bold text-green-500">${filteredDeposits.filter((d: Deposit) => d.status === 'APPROVED').reduce((sum: number, d: Deposit) => sum + d.amount, 0)}</span>
+                  </div>
+                )}
               </div>
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-between items-center mt-6 pt-6 border-t border-purple-50 text-xs font-semibold text-gray-500">
+                <span>
+                  Page {page} of {totalPages}
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    className="rounded-xl border-purple-50"
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={page === totalPages}
+                    onClick={() => setPage(page + 1)}
+                    className="rounded-xl border-purple-50"
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
+
           </div>
+
         </div>
+
       </div>
     </DashboardLayout>
   );

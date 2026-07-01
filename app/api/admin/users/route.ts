@@ -5,7 +5,7 @@ import User from '@/models/User';
 // GET: List all users
 export async function GET(request: NextRequest) {
   await dbConnect();
-  const users = await User.find({}, 'name email walletAddress isBlocked createdAt');
+  const users = await User.find({}, 'name email walletAddress balance isBlocked createdAt').sort({ createdAt: -1 });
   return NextResponse.json(users);
 }
 

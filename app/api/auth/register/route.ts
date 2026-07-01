@@ -8,13 +8,15 @@ const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-  walletAddress: z.string().min(10, 'Invalid wallet address'),
+  walletAddress: z.string().optional(),
+  coinType: z.string().optional(),
+  transferNetwork: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, password, walletAddress } = registerSchema.parse(body);
+    const { name, email, password, walletAddress, coinType, transferNetwork } = registerSchema.parse(body);
 
     await dbConnect();
 
@@ -39,7 +41,9 @@ export async function POST(request: NextRequest) {
       name,
       email,
       password: hashedPassword,
-      walletAddress,
+      walletAddress: walletAddress || '',
+      coinType: coinType || '',
+      transferNetwork: transferNetwork || '',
       role: 'investor',
       emailVerified: false,
       emailVerificationToken: token,
@@ -63,7 +67,8 @@ export async function POST(request: NextRequest) {
       { message: 'User created successfully. Please check your email to verify your account.', userId: user._id },
       { status: 201 }
     );
-  } catch (error) {
+  } catch (error: any) {
+    console.error('Registration failed with error:', error);
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.errors[0].message },
@@ -72,7 +77,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error?.message || 'Internal server error' },
       { status: 500 }
     );
   }

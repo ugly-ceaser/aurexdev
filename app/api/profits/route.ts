@@ -11,6 +11,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json([], { status: 401 });
   }
   await dbConnect();
-  const profits = await Profit.find({ user: session.user.id }).sort({ createdAt: -1 });
+  const profits = await Profit.find({ userId: session.user.id }).sort({ createdAt: -1 });
   return NextResponse.json(profits);
 }

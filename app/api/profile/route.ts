@@ -61,16 +61,24 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   await dbConnect();
-  const { oldPassword, newPassword } = await request.json();
+  const { currentPassword, newPassword } = await request.json();
+  
+  if (!currentPassword || !newPassword) {
+    return NextResponse.json({ error: 'Current password and new password are required' }, { status: 400 });
+  }
+  
   const user = await User.findById(session.user.id);
   if (!user) {
     return NextResponse.json({ error: 'User not found' }, { status: 404 });
   }
-  const isMatch = await bcrypt.compare(oldPassword, user.password);
+  
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) {
     return NextResponse.json({ error: 'Incorrect old password' }, { status: 400 });
   }
+  
   user.password = await bcrypt.hash(newPassword, 10);
   await user.save();
+  
   return NextResponse.json({ success: true });
 }

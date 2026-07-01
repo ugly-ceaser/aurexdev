@@ -51,12 +51,12 @@ export async function POST() {
     await Package.insertMany(packages);
 
     // Create admin user if doesn't exist
-    const adminExists = await User.findOne({ email: 'admin@Automated AI trades.com' });
+    const adminExists = await User.findOne({ email: 'admin@aurexcapital.com' });
     if (!adminExists) {
       const hashedPassword = await bcrypt.hash('admin123', 12);
       await User.create({
         name: 'Admin User',
-        email: 'admin@Automated AI trades.com',
+        email: 'admin@aurexcapital.com',
         password: hashedPassword,
         role: 'admin',
         walletAddress: '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',

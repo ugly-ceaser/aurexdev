@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json([], { status: 401 });
   }
-  const deposits = await Deposit.find({ user: session.user.id }).populate('package');
+  const deposits = await Deposit.find({ userId: session.user.id }).populate('packageId').sort({ createdAt: -1 });
   return NextResponse.json(deposits);
 }
 
@@ -34,12 +34,12 @@ export async function POST(req: NextRequest) {
   }
   // Create deposit
   const deposit = await Deposit.create({
-    user: session.user.id,
-    package: packageId,
+    userId: session.user.id,
+    packageId: packageId,
     amount,
-    transactionHash,
-    status: 'PENDING',
+    txHash: transactionHash,
+    status: 'pending',
   });
-  await deposit.populate('package');
+  await deposit.populate('packageId');
   return NextResponse.json(deposit);
 }

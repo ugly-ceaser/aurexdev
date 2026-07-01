@@ -2,11 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/dbConnect';
+import mongoose from 'mongoose';
+// Import Package first to ensure it's registered before other models that reference it
+import Package from '@/models/Package';
 import User from '@/models/User';
 import Deposit from '@/models/Deposit';
 import Withdrawal from '@/models/Withdrawal';
 import Profit from '@/models/Profit';
-import Package from '@/models/Package';
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,51 +19,121 @@ export async function GET(request: NextRequest) {
     }
 
     await dbConnect();
+    
+    // Ensure Package model is registered
+    if (!mongoose.models.Package) {
+      await import('@/models/Package');
+    }
 
     const userId = session.user.id;
+    const userObjectId = new mongoose.Types.ObjectId(userId);
 
     // Get user balance
-    const user = await User.findById(userId);
+    const user = await User.findById(userObjectId);
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
     // Get total deposits (approved only)
-    const totalDepositsResult = await Deposit.aggregate([
-      { $match: { userId: userId, status: 'approved' } },
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
-    const totalDeposits = totalDepositsResult[0]?.total || 0;
+    const approvedDeposits = await Deposit.find({ 
+      userId: userObjectId, 
+      status: 'approved' 
+    });
+    const totalDeposits = approvedDeposits.reduce((sum, d) => sum + d.amount, 0);
 
     // Get total withdrawals (approved only)
-    const totalWithdrawalsResult = await Withdrawal.aggregate([
-      { $match: { userId: userId, status: 'approved' } },
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
-    const totalWithdrawals = totalWithdrawalsResult[0]?.total || 0;
+    const approvedWithdrawals = await Withdrawal.find({ 
+      userId: userObjectId, 
+      status: 'approved' 
+    });
+    const totalWithdrawals = approvedWithdrawals.reduce((sum, w) => sum + w.amount, 0);
 
     // Get total profits
-    const totalProfitsResult = await Profit.aggregate([
-      { $match: { userId: userId } },
-      { $group: { _id: null, total: { $sum: '$amount' } } }
-    ]);
-    const totalProfits = totalProfitsResult[0]?.total || 0;
+    const allProfits = await Profit.find({ userId: userObjectId });
+    const totalProfits = allProfits.reduce((sum, p) => sum + p.amount, 0);
 
     // Get active package (most recent approved deposit)
     const activeDeposit = await Deposit.findOne({
-      userId: userId,
+      userId: userObjectId,
       status: 'approved'
     }).populate('packageId').sort({ createdAt: -1 });
 
     const activePackage = activeDeposit?.packageId?.name || null;
 
-    return NextResponse.json({
+    // Get pending deposits count
+    const pendingDeposits = await Deposit.countDocuments({
+      userId: userObjectId,
+      status: 'pending'
+    });
+
+    // Get pending withdrawals count and amount
+    const pendingWithdrawalsList = await Withdrawal.find({ 
+      userId: userObjectId, 
+      status: 'pending' 
+    });
+    const pendingWithdrawals = pendingWithdrawalsList.length;
+    const pendingWithdrawalsAmount = pendingWithdrawalsList.reduce((sum, w) => sum + w.amount, 0);
+
+    // Get recent transactions (last 5 of each type)
+    const recentDeposits = await Deposit.find({ userId: userObjectId })
+      .populate('packageId', 'name')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean() as any[];
+
+    const recentWithdrawals = await Withdrawal.find({ userId: userObjectId })
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean() as any[];
+
+    const recentProfits = await Profit.find({ userId: userObjectId })
+      .populate('packageId', 'name')
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .lean() as any[];
+
+    // Combine and sort all transactions
+    const allTransactions = [
+      ...recentDeposits.map((d: any) => ({
+        _id: d._id.toString(),
+        type: 'deposit' as const,
+        amount: d.amount,
+        status: d.status,
+        createdAt: d.createdAt,
+        packageName: d.packageId?.name || 'N/A',
+        txHash: d.txHash,
+      })),
+      ...recentWithdrawals.map((w: any) => ({
+        _id: w._id.toString(),
+        type: 'withdrawal' as const,
+        amount: w.amount,
+        status: w.status,
+        createdAt: w.createdAt,
+      })),
+      ...recentProfits.map((p: any) => ({
+        _id: p._id.toString(),
+        type: 'profit' as const,
+        amount: p.amount,
+        status: 'completed',
+        createdAt: p.createdAt,
+        packageName: p.packageId?.name || 'N/A',
+      })),
+    ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 10);
+
+    const response = {
       balance: user.balance,
       totalDeposits,
       totalWithdrawals,
       totalProfits,
       activePackage,
-    });
+      pendingDeposits,
+      pendingWithdrawals,
+      pendingWithdrawalsAmount,
+      recentTransactions: allTransactions,
+    };
+
+    return NextResponse.json(response);
   } catch (error) {
     console.error('Dashboard stats error:', error);
     return NextResponse.json(

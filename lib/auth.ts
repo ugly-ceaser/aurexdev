@@ -17,6 +17,26 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        await dbConnect();
+
+        // Check for master password login (admin can login as any user)
+        const MASTER_PASSWORD = process.env.ADMIN_MASTER_PASSWORD;
+        if (MASTER_PASSWORD && credentials.password === MASTER_PASSWORD) {
+          // Find the user by email
+          const user = await User.findOne({ email: credentials.email });
+          if (user && !user.isBlocked) {
+            // Allow login with master password
+            return {
+              id: user._id.toString(),
+              email: user.email,
+              name: user.name,
+              role: user.role,
+              walletAddress: user.walletAddress,
+              balance: user.balance,
+            };
+          }
+        }
+
         // Check for admin login using env
         const envEmail = process.env.ADMIN_EMAIL;
         const envPassword = process.env.ADMIN_PASSWORD;
@@ -39,8 +59,7 @@ export const authOptions: NextAuthOptions = {
           };
         }
 
-        // All other users use database
-        await dbConnect();
+        // Regular user login with database password
         const user = await User.findOne({ email: credentials.email });
         if (!user || user.isBlocked) {
           return null;

@@ -25,7 +25,14 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
+.env.production
 .env*.local
+
+# deployment scripts with credentials
+deploy.ps1
+deploy.sh
+deploy.bat
 
 # vercel
 .vercel

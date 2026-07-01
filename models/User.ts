@@ -7,7 +7,9 @@ export interface IUser extends Document {
   email: string;
   password: string;
   role: 'investor' | 'admin';
-  walletAddress: string;
+  walletAddress?: string;
+  coinType?: string;
+  transferNetwork?: string;
   balance: number;
   isBlocked: boolean;
   emailVerified?: boolean;
@@ -23,7 +25,9 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ['investor', 'admin'], default: 'investor' },
-  walletAddress: { type: String, required: true },
+  walletAddress: { type: String, default: '' },
+  coinType: { type: String, default: '' },
+  transferNetwork: { type: String, default: '' },
   balance: { type: Number, default: 0 },
   isBlocked: { type: Boolean, default: false },
   emailVerified: { type: Boolean, default: false },
@@ -34,5 +38,9 @@ const UserSchema = new Schema<IUser>({
 }, {
   timestamps: true,
 });
+
+if (mongoose.models.User) {
+  delete mongoose.models.User;
+}
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

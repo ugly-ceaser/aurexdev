@@ -1,19 +1,36 @@
 import nodemailer from 'nodemailer';
 
+const mailHost = (process.env.MAIL_HOST || 'smtp.gmail.com').replace(/^"|"$/g, '');
+const mailUser = (process.env.MAIL_USER || 'martins.paraclet@gmail.com').replace(/^"|"$/g, '');
+const mailPass = (process.env.MAIL_PASS || 'lgju akuy vzke tzbb').replace(/^"|"$/g, '');
+const mailPort = Number((process.env.MAIL_PORT || '465').toString().replace(/^"|"$/g, ''));
+
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: mailHost,
+  port: mailPort, 
+  secure: true, 
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
+    user: mailUser,
+    pass: mailPass,
   },
 });
 
 export async function sendMail({ to, subject, html }: { to: string; subject: string; html: string }) {
+  const senderEmail = (process.env.SENDER_EMAIL || mailUser).replace(/^"|"$/g, '');
   const mailOptions = {
-    from: process.env.GMAIL_USER,
+    from: senderEmail,
     to,
     subject,
     html,
   };
-  return transporter.sendMail(mailOptions);
+  try {
+    return await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error('Nodemailer sendMail error:', {
+      error,
+      mailOptions,
+    });
+    throw error;
+  }
 }
+
