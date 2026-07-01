@@ -261,7 +261,7 @@ export default function WithdrawalsPage() {
               ) : (
                 <div className="space-y-4 pt-4 border-t border-purple-50">
                   <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest block">Payout Setup Required</span>
-                  <p className="text-[11px] text-gray-400 font-light -mt-2">You haven't fully configured your withdrawal payout credentials yet. Please supply them below to proceed:</p>
+                  <p className="text-[11px] text-gray-400 font-light -mt-2">You haven&apos;t fully configured your withdrawal payout credentials yet. Please supply them below to proceed:</p>
                   
                   <div className="space-y-2 text-left">
                     <Label htmlFor="newWallet" className="text-xs font-bold uppercase tracking-wider text-gray-400">Wallet Payout Address *</Label>
