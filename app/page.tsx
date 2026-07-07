@@ -8,6 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import CryptoMarketWidget from '@/components/ui/CryptoMarketWidget';
 import ForexRatesWidget from '@/components/ui/ForexRatesWidget';
+import MarketMetricsBar from '@/components/ui/MarketMetricsBar';
+import LiveTradingSignals from '@/components/ui/LiveTradingSignals';
+import MarketSentimentDashboard from '@/components/ui/MarketSentimentDashboard';
+import TradingCalculator from '@/components/ui/TradingCalculator';
+import WhyChooseUs from '@/components/ui/WhyChooseUs';
+import FeatureComparison from '@/components/ui/FeatureComparison';
+import EconomicCalendar from '@/components/ui/EconomicCalendar';
+import FAQSection from '@/components/ui/FAQSection';
 import {
   TrendingUp,
   Shield,
@@ -21,7 +29,12 @@ import {
   Zap,
   Lock,
   ArrowUpRight,
-  Database
+  Database,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Mail
 } from 'lucide-react';
 
 interface Package {
@@ -42,6 +55,7 @@ export default function Home() {
   const [cardPositions, setCardPositions] = useState([0, 1, 2, 3, 4]);
   const [featureCardPositions, setFeatureCardPositions] = useState([0, 1]);
   const [hoveredFeatureCard, setHoveredFeatureCard] = useState<number | null>(null);
+  const [activeTerminalTab, setActiveTerminalTab] = useState<'signals' | 'sentiment' | 'feeds'>('signals');
 
   // Mouse hover perspective state
   const heroVisualRef = useRef<HTMLDivElement>(null);
@@ -182,12 +196,14 @@ export default function Home() {
         </Link>
 
         {/* Links */}
-        <div className="hidden md:flex items-center space-x-8">
-          <a href="#metrics" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Metrics</a>
-          <a href="#why" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Platform</a>
-          <a href="#packages" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Yield Pools</a>
-          <a href="#markets" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Markets</a>
-          <a href="#testimonials" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Reviews</a>
+        <div className="hidden md:flex items-center space-x-6">
+          <a href="#why" className="text-xs font-semibold text-gray-600 hover:text-[#7c3aed] transition-colors uppercase tracking-wider">Why Us</a>
+          <a href="#packages" className="text-xs font-semibold text-gray-600 hover:text-[#7c3aed] transition-colors uppercase tracking-wider">Yield Pools</a>
+          <a href="#plans" className="text-xs font-semibold text-gray-600 hover:text-[#7c3aed] transition-colors uppercase tracking-wider">Plans</a>
+          <a href="#markets" className="text-xs font-semibold text-gray-600 hover:text-[#7c3aed] transition-colors uppercase tracking-wider">Market Hub</a>
+          <a href="#events" className="text-xs font-semibold text-gray-600 hover:text-[#7c3aed] transition-colors uppercase tracking-wider">Calendar</a>
+          <a href="#calculator" className="text-xs font-semibold text-gray-600 hover:text-[#7c3aed] transition-colors uppercase tracking-wider">Calculator</a>
+          <a href="#faq" className="text-xs font-semibold text-gray-600 hover:text-[#7c3aed] transition-colors uppercase tracking-wider">FAQ</a>
         </div>
 
         {/* Action Button */}
@@ -542,8 +558,13 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Why Choose Us Section */}
+      <section id="why" className="py-24 max-w-7xl mx-auto px-6 z-10 relative border-t border-purple-100/40">
+        <WhyChooseUs />
+      </section>
+
       {/* Platform Features */}
-      <section id="why" className="py-24 max-w-7xl mx-auto px-6 z-10 relative">
+      <section id="features" className="py-24 max-w-7xl mx-auto px-6 z-10 relative">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-6">
             <Badge className="bg-[#4169e1]/10 text-[#4169e1] border-none font-bold uppercase tracking-wider rounded-full px-4 py-1">Platform Architecture</Badge>
@@ -642,6 +663,11 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Feature Comparison Section */}
+      <section id="plans" className="py-24 bg-[#f0eee9]/40 border-t border-purple-100/60 z-10 relative">
+        <FeatureComparison />
+      </section>
+
       {/* Market Telemetry Section */}
       <section id="markets" className="py-24 bg-[#0a0a0c] text-white z-10 relative overflow-hidden border-t border-gray-800">
         {/* Ambient background glow blobs for dark mode operations terminal */}
@@ -651,7 +677,7 @@ export default function Home() {
         </div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center space-y-4 mb-16">
+          <div className="text-center space-y-4 mb-12">
             <Badge className="bg-[#7c3aed]/25 text-[#a855f7] border border-[#7c3aed]/40 font-bold uppercase tracking-wider rounded-full px-4 py-1">
               Live Operations
             </Badge>
@@ -663,44 +689,173 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-            {/* Cryptocurrency Markets Table */}
-            <div className="lg:col-span-7 xl:col-span-8 group transition-all duration-500 h-full">
-              <div className="bg-[#12131a]/90 backdrop-blur-xl border border-gray-850 rounded-[28px] p-6 shadow-2xl transition-all duration-300 hover:border-[#7c3aed]/40 hover:shadow-[0_0_50px_rgba(124,58,237,0.15)] h-full flex flex-col justify-between">
-                <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                    <h3 className="font-syne text-xl font-bold text-white">Cryptocurrency Markets</h3>
-                  </div>
-                  <Badge className="bg-emerald-500/10 text-emerald-450 border border-emerald-550/20 font-semibold px-2.5 py-0.5 rounded-full text-xs">
-                    Live Data
-                  </Badge>
-                </div>
-                <div className="rounded-2xl overflow-hidden border border-gray-800/80 bg-[#0e1017] flex-1 flex flex-col">
-                  <CryptoMarketWidget />
-                </div>
-              </div>
-            </div>
+          {/* Market Metrics Overview */}
+          <MarketMetricsBar />
 
-            {/* Exchange Rates Matrix */}
-            <div className="lg:col-span-5 xl:col-span-4 group transition-all duration-500 h-full">
-              <div className="bg-[#12131a]/90 backdrop-blur-xl border border-gray-850 rounded-[28px] p-6 shadow-2xl transition-all duration-300 hover:border-[#7c3aed]/40 hover:shadow-[0_0_50px_rgba(124,58,237,0.15)] h-full flex flex-col justify-between">
-                <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-blue-500 animate-ping" />
-                    <h3 className="font-syne text-xl font-bold text-white">Exchange Rates</h3>
+          {/* Tab Selector Buttons */}
+          <div className="flex justify-center mb-10 border border-gray-800 max-w-md mx-auto p-1 bg-[#12131a]/80 rounded-2xl relative overflow-visible">
+            <style dangerouslySetInnerHTML={{ __html: `
+              @keyframes ghostShiftRight {
+                0% { transform: translateX(0) scale(1); opacity: 0.5; }
+                25%, 100% { transform: translateX(28px) scale(0.95); opacity: 0; }
+              }
+              @keyframes ghostShiftLeft {
+                0% { transform: translateX(0) scale(1); opacity: 0.5; }
+                25%, 100% { transform: translateX(-28px) scale(0.95); opacity: 0; }
+              }
+              .animate-ghost-shift-right {
+                animation: ghostShiftRight 3.5s infinite ease-in-out;
+              }
+              .animate-ghost-shift-left {
+                animation: ghostShiftLeft 3.5s infinite ease-in-out;
+              }
+            `}} />
+            <button
+              onClick={() => setActiveTerminalTab('signals')}
+              className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 relative overflow-visible ${
+                activeTerminalTab === 'signals'
+                  ? 'bg-[#7c3aed] text-white shadow-md'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {activeTerminalTab === 'signals' && (
+                <div className="absolute inset-0 bg-[#7c3aed] rounded-xl pointer-events-none z-0 animate-ghost-shift-right" />
+              )}
+              <span className="relative z-10">Live Signals</span>
+            </button>
+            <button
+              onClick={() => setActiveTerminalTab('sentiment')}
+              className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 relative overflow-visible ${
+                activeTerminalTab === 'sentiment'
+                  ? 'bg-[#7c3aed] text-white shadow-md'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {activeTerminalTab === 'sentiment' && (
+                <div className="absolute inset-0 bg-[#7c3aed] rounded-xl pointer-events-none z-0 animate-ghost-shift-right" />
+              )}
+              <span className="relative z-10">Market Sentiment</span>
+            </button>
+            <button
+              onClick={() => setActiveTerminalTab('feeds')}
+              className={`flex-1 py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 relative overflow-visible ${
+                activeTerminalTab === 'feeds'
+                  ? 'bg-[#7c3aed] text-white shadow-md'
+                  : 'text-gray-400 hover:text-white'
+              }`}
+            >
+              {activeTerminalTab === 'feeds' && (
+                <div className="absolute inset-0 bg-[#7c3aed] rounded-xl pointer-events-none z-0 animate-ghost-shift-left" />
+              )}
+              <span className="relative z-10">Live Feeds</span>
+            </button>
+          </div>
+
+          {/* Tab Contents */}
+          <div className="w-full">
+            {activeTerminalTab === 'signals' && (
+              <div className="animate-fade-in">
+                <LiveTradingSignals />
+              </div>
+            )}
+            {activeTerminalTab === 'sentiment' && (
+              <div className="animate-fade-in">
+                <MarketSentimentDashboard />
+              </div>
+            )}
+            {activeTerminalTab === 'feeds' && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch animate-fade-in">
+                {/* Cryptocurrency Markets Table */}
+                <div className="lg:col-span-7 xl:col-span-8 group transition-all duration-500 h-full">
+                  <div className="bg-[#12131a]/90 backdrop-blur-xl border border-gray-850 rounded-[28px] p-6 shadow-2xl transition-all duration-300 hover:border-[#7c3aed]/40 hover:shadow-[0_0_50px_rgba(124,58,237,0.15)] h-full flex flex-col justify-between">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                        <h3 className="font-syne text-xl font-bold text-white">Cryptocurrency Markets</h3>
+                      </div>
+                      <Badge className="bg-emerald-500/10 text-emerald-450 border border-emerald-550/20 font-semibold px-2.5 py-0.5 rounded-full text-xs">
+                        Live Data
+                      </Badge>
+                    </div>
+                    <div className="rounded-2xl overflow-hidden border border-gray-800/80 bg-[#0e1017] flex-1 flex flex-col">
+                      <CryptoMarketWidget />
+                    </div>
                   </div>
-                  <Badge className="bg-blue-500/10 text-blue-450 border border-blue-550/20 font-semibold px-2.5 py-0.5 rounded-full text-xs">
-                    Fiat Crosses
-                  </Badge>
                 </div>
-                <div className="rounded-2xl overflow-hidden border border-gray-800/80 bg-[#0e1017] flex-1 flex flex-col">
-                  <ForexRatesWidget />
+
+                {/* Exchange Rates Matrix */}
+                <div className="lg:col-span-5 xl:col-span-4 group transition-all duration-500 h-full">
+                  <div className="bg-[#12131a]/90 backdrop-blur-xl border border-gray-850 rounded-[28px] p-6 shadow-2xl transition-all duration-300 hover:border-[#7c3aed]/40 hover:shadow-[0_0_50px_rgba(124,58,237,0.15)] h-full flex flex-col justify-between">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-2 w-2 rounded-full bg-blue-500 animate-ping" />
+                        <h3 className="font-syne text-xl font-bold text-white">Exchange Rates</h3>
+                      </div>
+                      <Badge className="bg-blue-500/10 text-blue-450 border border-blue-550/20 font-semibold px-2.5 py-0.5 rounded-full text-xs">
+                        Fiat Crosses
+                      </Badge>
+                    </div>
+                    <div className="rounded-2xl overflow-hidden border border-gray-800/80 bg-[#0e1017] flex-1 flex flex-col">
+                      <ForexRatesWidget />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
+      </section>
+
+      {/* Economic Calendar Section */}
+      <section id="events" className="py-24 bg-[#f0eee9]/40 border-t border-purple-100/60 z-10 relative text-center">
+        <div className="max-w-7xl mx-auto px-6 text-center space-y-4 mb-16">
+          <Badge className="bg-[#7c3aed]/10 text-[#7c3aed] border border-[#7c3aed]/25 font-bold uppercase tracking-wider rounded-full px-4 py-1">
+            Global Agenda
+          </Badge>
+          <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900">
+            Economic <span className="bg-[#7c3aed] bg-clip-text text-transparent">Calendar</span>
+          </h2>
+          <p className="text-gray-500 text-lg font-light max-w-lg mx-auto font-sans">
+            Stay informed about upcoming economic events that impact international asset valuations.
+          </p>
+        </div>
+        <div className="max-w-7xl mx-auto px-6">
+          <EconomicCalendar />
+        </div>
+      </section>
+
+      {/* Trading Calculator Section */}
+      <section id="calculator" className="py-24 max-w-7xl mx-auto px-6 z-10 relative text-center">
+        <div className="space-y-4 mb-16">
+          <Badge className="bg-[#7c3aed]/10 text-[#7c3aed] border border-[#7c3aed]/20 font-bold uppercase tracking-wider rounded-full px-4 py-1">
+            Trading Utilities
+          </Badge>
+          <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
+            Pro <span className="bg-[#7c3aed] bg-clip-text text-transparent">Trading Calculator</span>
+          </h2>
+          <p className="text-gray-500 text-lg font-light max-w-lg mx-auto">
+            Plan your risk and potential gains before placing trades with our precision calculator tools.
+          </p>
+        </div>
+
+        <TradingCalculator />
+      </section>
+
+      {/* FAQ Section */}
+      <section id="faq" className="py-24 max-w-7xl mx-auto px-6 z-10 relative text-center border-t border-purple-100/40">
+        <div className="space-y-4 mb-16">
+          <Badge className="bg-[#7c3aed]/10 text-[#7c3aed] border border-[#7c3aed]/25 font-bold uppercase tracking-wider rounded-full px-4 py-1">
+            Support FAQ
+          </Badge>
+          <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
+            Frequently Asked <span className="bg-[#7c3aed] bg-clip-text text-transparent">Questions</span>
+          </h2>
+          <p className="text-gray-500 text-lg font-light max-w-lg mx-auto font-sans">
+            Find answers to common questions about our trading architecture, payouts, and security protocols.
+          </p>
+        </div>
+
+        <FAQSection />
       </section>
 
       {/* Testimonials */}
@@ -791,20 +946,78 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-purple-100 py-12 px-6 bg-white/40 backdrop-blur-md z-10 relative">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3">
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-tr from-[#4169e1] via-[#7c3aed] to-[#e040fb] flex items-center justify-center">
-              <BarChart3 className="h-4 w-4 text-white" />
+      <footer className="bg-[#050507] text-white border-t border-gray-950 py-16 px-6 relative z-10 text-left">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 border-b border-gray-800 pb-12">
+          {/* Column 1: Info */}
+          <div className="space-y-4 md:col-span-2 lg:col-span-1">
+            <Link href="/" className="flex items-center space-x-3">
+              <div className="h-8 w-8 rounded-lg bg-[#7c3aed] flex items-center justify-center">
+                <BarChart3 className="h-4.5 w-4.5 text-white" />
+              </div>
+              <span className="font-syne text-lg font-bold tracking-tight text-white">
+                Aurex Capital
+              </span>
+            </Link>
+            <p className="text-xs text-gray-400 font-light leading-relaxed max-w-xs">
+              Your trusted partner in forex trading. Join thousands of successful traders worldwide.
+            </p>
+            <div className="flex items-center space-x-4 text-gray-400">
+              <a href="#" className="hover:text-white transition-colors"><Facebook className="h-4 w-4" /></a>
+              <a href="#" className="hover:text-white transition-colors"><Twitter className="h-4 w-4" /></a>
+              <a href="#" className="hover:text-white transition-colors"><Linkedin className="h-4 w-4" /></a>
+              <a href="#" className="hover:text-white transition-colors"><Instagram className="h-4 w-4" /></a>
             </div>
-            <span className="font-syne text-lg font-bold tracking-tight bg-gradient-to-r from-[#4169e1] to-[#e040fb] bg-clip-text text-transparent">
-              Aurex Capital
-            </span>
           </div>
 
-          <p className="text-xs text-gray-400 font-medium">
-            © 2026 Aurex Capital. Secure Wealth. Infinite Possibilities
-          </p>
+          {/* Column 2: Trading */}
+          <div className="space-y-3">
+            <h5 className="text-xs font-bold uppercase tracking-wider text-amber-500">Trading</h5>
+            <ul className="space-y-2 text-xs text-gray-400 font-medium">
+              <li><a href="#" className="hover:text-white transition-colors">Forex</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Commodities</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Indices</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Cryptocurrencies</a></li>
+            </ul>
+          </div>
+
+          {/* Column 3: Platforms */}
+          <div className="space-y-3">
+            <h5 className="text-xs font-bold uppercase tracking-wider text-amber-500">Platforms</h5>
+            <ul className="space-y-2 text-xs text-gray-400 font-medium">
+              <li><a href="#" className="hover:text-white transition-colors">Web Trader</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Mobile App</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Desktop</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">API</a></li>
+            </ul>
+          </div>
+
+          {/* Column 4: Support */}
+          <div className="space-y-3">
+            <h5 className="text-xs font-bold uppercase tracking-wider text-amber-500">Support</h5>
+            <ul className="space-y-2 text-xs text-gray-400 font-medium">
+              <li><a href="#" className="hover:text-white transition-colors">Help Center</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Education</a></li>
+            </ul>
+          </div>
+
+          {/* Column 5: Legal */}
+          <div className="space-y-3">
+            <h5 className="text-xs font-bold uppercase tracking-wider text-amber-500">Legal</h5>
+            <ul className="space-y-2 text-xs text-gray-400 font-medium">
+              <li><a href="#" className="hover:text-white transition-colors">Terms of Service</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Privacy Policy</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Risk Disclosure</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Regulations</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-500 font-medium">
+          <span>© 2026 Aurex Capital. All rights reserved.</span>
+          <a href="mailto:mail@aurexcapital.com" className="hover:text-white transition-colors flex items-center gap-1.5">
+            <Mail className="h-3.5 w-3.5" /> mail@aurexcapital.com
+          </a>
         </div>
       </footer>
     </div>
