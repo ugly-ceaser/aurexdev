@@ -15,7 +15,8 @@ import {
   User,
   Users,
   Settings,
-  LogOut
+  LogOut,
+  CreditCard
 } from 'lucide-react';
 
 interface DashboardLayoutProps {
@@ -34,6 +35,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: '/dashboard/deposits', label: 'Deposits', icon: TrendingUp },
     { href: '/dashboard/withdrawals', label: 'Withdrawals', icon: TrendingDown },
     { href: '/dashboard/packages', label: 'Yield Pools', icon: Package },
+    { href: '/dashboard/cards', label: 'Virtual Cards', icon: CreditCard },
     { href: '/dashboard/profile', label: 'Profile', icon: User },
   ];
 

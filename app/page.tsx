@@ -6,6 +6,8 @@ import { useSession, signOut } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import CryptoMarketWidget from '@/components/ui/CryptoMarketWidget';
+import ForexRatesWidget from '@/components/ui/ForexRatesWidget';
 import {
   TrendingUp,
   Shield,
@@ -169,12 +171,12 @@ export default function Home() {
     <div className="min-h-screen relative overflow-hidden bg-[#f8f7f5] text-[#0f0e0d]">
 
       {/* Floating Translucent Navbar */}
-      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-48px)] max-w-7xl glass-panel rounded-[32px] px-6 py-4 flex items-center justify-between shadow-lg">
-        <Link href="/" className="flex items-center space-x-3">
+      <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-48px)] max-w-7xl glass-panel rounded-[32px] px-3 py-3 sm:px-6 sm:py-4 flex items-center justify-between shadow-lg">
+        <Link href="/" className="flex items-center space-x-2 sm:space-x-3 shrink-0">
           <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#4169e1] via-[#7c3aed] to-[#e040fb] flex items-center justify-center shadow-md">
             <BarChart3 className="h-5 w-5 text-white" />
           </div>
-          <span className="font-syne text-xl font-bold tracking-tight bg-gradient-to-r from-[#4169e1] to-[#e040fb] bg-clip-text text-transparent">
+          <span className="font-syne text-xl font-bold tracking-tight bg-gradient-to-r from-[#4169e1] to-[#e040fb] bg-clip-text text-transparent hidden sm:inline-block">
             Aurex Capital
           </span>
         </Link>
@@ -184,16 +186,17 @@ export default function Home() {
           <a href="#metrics" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Metrics</a>
           <a href="#why" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Platform</a>
           <a href="#packages" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Yield Pools</a>
+          <a href="#markets" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Markets</a>
           <a href="#testimonials" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] transition-colors">Reviews</a>
         </div>
 
         {/* Action Button */}
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-1.5 sm:space-x-3">
           {session ? (
             <>
               <span className="text-xs text-gray-500 hidden sm:inline">Welcome, <strong className="text-gray-700">{session.user.name}</strong></span>
               <Link href={session.user.role === 'admin' ? '/admin' : '/dashboard'}>
-                <Button variant="outline" size="sm" className="rounded-full border-purple-200 hover:bg-purple-50 text-gray-700">
+                <Button variant="outline" size="sm" className="rounded-full border-purple-200 hover:bg-purple-50 text-gray-700 text-xs sm:text-sm px-2.5 sm:px-4">
                   Dashboard
                 </Button>
               </Link>
@@ -203,11 +206,11 @@ export default function Home() {
             </>
           ) : (
             <>
-              <Link href="/auth/login" className="text-sm font-medium text-gray-600 hover:text-[#7c3aed] px-3 py-1.5 transition-colors">
+              <Link href="/auth/login" className="text-xs sm:text-sm font-medium text-gray-600 hover:text-[#7c3aed] px-2 sm:px-3 py-1.5 transition-colors">
                 Log In
               </Link>
               <Link href="/auth/register">
-                <Button size="sm" className="rounded-full bg-gradient-to-r from-[#4169e1] to-[#7c3aed] hover:from-[#3558c8] hover:to-[#6b2fd5] text-white px-5 shadow-md shadow-purple-200 border-none transition-all duration-300">
+                <Button size="sm" className="rounded-full bg-gradient-to-r from-[#4169e1] to-[#7c3aed] hover:from-[#3558c8] hover:to-[#6b2fd5] text-white px-3 sm:px-5 shadow-md shadow-purple-200 border-none transition-all duration-300 text-xs sm:text-sm">
                   Start Earning
                 </Button>
               </Link>
@@ -226,7 +229,7 @@ export default function Home() {
             Next-Generation AI Investment Platform
           </div>
 
-          <h1 className="font-syne text-5xl md:text-7xl font-extrabold tracking-tight text-[#0f0e0d] leading-[1.08] lg:max-w-xl">
+          <h1 className="font-syne text-3xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-[#0f0e0d] leading-[1.08] lg:max-w-xl">
             Secure Wealth. <br />
             Built for Life.
           </h1>
@@ -277,7 +280,7 @@ export default function Home() {
             onClick={() => handleCardClick(0)}
             onMouseEnter={() => setHoveredCard(0)}
             onMouseLeave={() => setHoveredCard(null)}
-            className={`${getCardClasses(0)} w-[360px] glass-panel-heavy rounded-[28px] p-6`}
+            className={`${getCardClasses(0)} w-full max-w-[360px] glass-panel-heavy rounded-[28px] p-6`}
           >
             <div className="flex items-center justify-between mb-6">
               <span className="text-xs uppercase tracking-wider text-gray-400 font-bold">Portfolio telemetry</span>
@@ -432,7 +435,7 @@ export default function Home() {
       <section id="metrics" className="py-24 max-w-7xl mx-auto px-6 z-10 relative text-center">
         <div className="space-y-4 mb-16">
           <Badge className="bg-[#7c3aed]/10 text-[#7c3aed] border-none font-bold uppercase tracking-wider rounded-full px-4 py-1">Platform Metrics</Badge>
-          <h2 className="font-syne text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
+          <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
             Telemetry Performance <br />
             in <span className="bg-gradient-to-r from-[#4169e1] via-[#7c3aed] to-[#e040fb] bg-clip-text text-transparent">Real-Time</span>
           </h2>
@@ -465,7 +468,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center space-y-4 mb-16">
             <Badge className="bg-[#e040fb]/10 text-[#e040fb] border-none font-bold uppercase tracking-wider rounded-full px-4 py-1">Yield pools</Badge>
-            <h2 className="font-syne text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
+            <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
               Invest into <span className="bg-gradient-to-r from-[#4169e1] via-[#7c3aed] to-[#e040fb] bg-clip-text text-transparent">AI Trading</span> Pools
             </h2>
             <p className="text-gray-500 text-lg font-light max-w-md mx-auto">
@@ -544,7 +547,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-6">
             <Badge className="bg-[#4169e1]/10 text-[#4169e1] border-none font-bold uppercase tracking-wider rounded-full px-4 py-1">Platform Architecture</Badge>
-            <h2 className="font-syne text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
+            <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
               Sovereign Asset <br />
               Optimization <span className="bg-gradient-to-r from-[#4169e1] to-[#7c3aed] bg-clip-text text-transparent">Engines</span>
             </h2>
@@ -584,7 +587,7 @@ export default function Home() {
               onMouseLeave={() => setHoveredFeatureCard(null)}
               className={getFeatureCardClasses(0)}
             >
-              <div className="w-[300px] glass-panel-heavy rounded-[28px] p-6 shadow-2xl animate-float-a hover:border-purple-200">
+              <div className="w-full max-w-[300px] glass-panel-heavy rounded-[28px] p-6 shadow-2xl animate-float-a hover:border-purple-200">
                 <h3 className="font-syne font-bold text-lg text-gray-900 mb-4 text-center">Liquidity Allocations</h3>
                 <div className="relative w-36 h-36 mx-auto mb-6 flex items-center justify-center">
                   {/* SVG Donut */}
@@ -624,7 +627,7 @@ export default function Home() {
               onMouseLeave={() => setHoveredFeatureCard(null)}
               className={getFeatureCardClasses(1)}
             >
-              <div className="w-[240px] glass-panel rounded-[24px] p-5 shadow-lg animate-float-b hover:border-purple-200 text-left">
+              <div className="w-full max-w-[240px] glass-panel rounded-[24px] p-5 shadow-lg animate-float-b hover:border-purple-200 text-left">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">TELEMETRY SECURE</span>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
@@ -639,12 +642,73 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Market Telemetry Section */}
+      <section id="markets" className="py-24 bg-[#0a0a0c] text-white z-10 relative overflow-hidden border-t border-gray-800">
+        {/* Ambient background glow blobs for dark mode operations terminal */}
+        <div className="absolute inset-0 pointer-events-none z-0">
+          <div className="absolute w-[500px] h-[500px] rounded-full bg-[#4169e1]/10 blur-[120px] -top-20 -left-20 animate-pulse" />
+          <div className="absolute w-[500px] h-[500px] rounded-full bg-[#e040fb]/10 blur-[120px] bottom-10 right-10 animate-pulse" style={{ animationDelay: '2s' }} />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center space-y-4 mb-16">
+            <Badge className="bg-[#7c3aed]/25 text-[#a855f7] border border-[#7c3aed]/40 font-bold uppercase tracking-wider rounded-full px-4 py-1">
+              Live Operations
+            </Badge>
+            <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+              Global Market <span className="text-[#a855f7]">Telemetry</span>
+            </h2>
+            <p className="text-gray-400 text-lg font-light max-w-lg mx-auto">
+              Real-time asset telemetry streaming directly from global cryptocurrency exchanges and forex matrices.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            {/* Cryptocurrency Markets Table */}
+            <div className="lg:col-span-7 xl:col-span-8 group transition-all duration-500 h-full">
+              <div className="bg-[#12131a]/90 backdrop-blur-xl border border-gray-850 rounded-[28px] p-6 shadow-2xl transition-all duration-300 hover:border-[#7c3aed]/40 hover:shadow-[0_0_50px_rgba(124,58,237,0.15)] h-full flex flex-col justify-between">
+                <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                    <h3 className="font-syne text-xl font-bold text-white">Cryptocurrency Markets</h3>
+                  </div>
+                  <Badge className="bg-emerald-500/10 text-emerald-450 border border-emerald-550/20 font-semibold px-2.5 py-0.5 rounded-full text-xs">
+                    Live Data
+                  </Badge>
+                </div>
+                <div className="rounded-2xl overflow-hidden border border-gray-800/80 bg-[#0e1017] flex-1 flex flex-col">
+                  <CryptoMarketWidget />
+                </div>
+              </div>
+            </div>
+
+            {/* Exchange Rates Matrix */}
+            <div className="lg:col-span-5 xl:col-span-4 group transition-all duration-500 h-full">
+              <div className="bg-[#12131a]/90 backdrop-blur-xl border border-gray-850 rounded-[28px] p-6 shadow-2xl transition-all duration-300 hover:border-[#7c3aed]/40 hover:shadow-[0_0_50px_rgba(124,58,237,0.15)] h-full flex flex-col justify-between">
+                <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-2 rounded-full bg-blue-500 animate-ping" />
+                    <h3 className="font-syne text-xl font-bold text-white">Exchange Rates</h3>
+                  </div>
+                  <Badge className="bg-blue-500/10 text-blue-450 border border-blue-550/20 font-semibold px-2.5 py-0.5 rounded-full text-xs">
+                    Fiat Crosses
+                  </Badge>
+                </div>
+                <div className="rounded-2xl overflow-hidden border border-gray-800/80 bg-[#0e1017] flex-1 flex flex-col">
+                  <ForexRatesWidget />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section id="testimonials" className="py-24 bg-[#f0eee9]/20 border-t border-purple-100 z-10 relative">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center space-y-4 mb-16">
             <Badge className="bg-[#7c3aed]/10 text-[#7c3aed] border-none font-bold uppercase tracking-wider rounded-full px-4 py-1">Reviews</Badge>
-            <h2 className="font-syne text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
+            <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
               Feedback from <span className="bg-gradient-to-r from-[#4169e1] via-[#7c3aed] to-[#e040fb] bg-clip-text text-transparent">Our Investors</span>
             </h2>
             <p className="text-gray-500 text-lg font-light max-w-md mx-auto">
@@ -699,13 +763,13 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-24 z-10 relative">
         <div className="max-w-4xl mx-auto px-6">
-          <div className="bg-white/80 backdrop-blur-2xl border border-white/90 rounded-[40px] p-16 md:p-24 text-center shadow-xl relative overflow-hidden">
+          <div className="bg-white/80 backdrop-blur-2xl border border-white/90 rounded-[40px] p-6 sm:p-16 md:p-24 text-center shadow-xl relative overflow-hidden">
 
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none bg-gradient-to-br from-[#4169e1]/5 via-[#7c3aed]/5 to-transparent z-0" />
 
             <div className="relative z-10 space-y-6">
               <Badge className="bg-[#7c3aed]/10 text-[#7c3aed] border-none font-bold uppercase tracking-wider rounded-full px-4 py-1">Ready to start?</Badge>
-              <h2 className="font-syne text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
+              <h2 className="font-syne text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#0f0e0d] tracking-tight">
                 Unlock Premium <br />
                 Capital <span className="bg-gradient-to-r from-[#4169e1] via-[#7c3aed] to-[#e040fb] bg-clip-text text-transparent">Appreciation</span>
               </h2>

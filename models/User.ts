@@ -15,6 +15,7 @@ export interface IUser extends Document {
   emailVerified?: boolean;
   emailVerificationToken?: string;
   emailVerificationTokenExpires?: Date;
+  requestedCardWaitlist?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +32,7 @@ const UserSchema = new Schema<IUser>({
   balance: { type: Number, default: 0 },
   isBlocked: { type: Boolean, default: false },
   emailVerified: { type: Boolean, default: false },
+  requestedCardWaitlist: { type: Boolean, default: false },
   emailVerificationToken: { type: String },
   emailVerificationTokenExpires: { type: Date },
   passwordResetToken: { type: String },

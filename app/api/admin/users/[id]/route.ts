@@ -59,6 +59,7 @@ export async function GET(
         balance: user.balance,
         isBlocked: user.isBlocked,
         emailVerified: user.emailVerified,
+        requestedCardWaitlist: user.requestedCardWaitlist || false,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         // Note: Password is hashed and cannot be decrypted

@@ -24,6 +24,7 @@ interface UserDetails {
     balance: number;
     isBlocked: boolean;
     emailVerified: boolean;
+    requestedCardWaitlist?: boolean;
     createdAt: string;
     updatedAt: string;
     passwordHash: string;
@@ -287,6 +288,12 @@ export default function UserDetailsPage() {
                 <div>
                   <p className="text-sm text-gray-400">Wallet Address</p>
                   <p className="text-white font-mono text-sm break-all">{user.walletAddress || 'Not set'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Virtual USD Card Waitlist</p>
+                  <Badge variant={user.requestedCardWaitlist ? 'default' : 'secondary'} className={user.requestedCardWaitlist ? 'bg-emerald-500 hover:bg-emerald-600 text-white' : ''}>
+                    {user.requestedCardWaitlist ? 'Joined Waitlist' : 'Not Requested'}
+                  </Badge>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Member Since</p>
