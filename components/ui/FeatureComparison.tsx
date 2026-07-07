@@ -6,8 +6,9 @@ import Link from 'next/link';
 interface PlanFeature {
   name: string;
   starter: string | boolean;
-  gold: string | boolean;
-  zenith: string | boolean;
+  professional: string | boolean;
+  premium: string | boolean;
+  elite: string | boolean;
 }
 
 export default function FeatureComparison() {
@@ -19,12 +20,12 @@ export default function FeatureComparison() {
   ];
 
   const features: PlanFeature[] = [
-    { name: 'Minimum Deposit', starter: '$100', gold: '$3,000', zenith: '$10,000' },
-    { name: 'Spreads From', starter: '1.5 pips', gold: '0.5 pips', zenith: '0.1 pips' },
-    { name: 'Maximum Leverage', starter: '1:100', gold: '1:300', zenith: '1:500' },
-    { name: 'Currency Pairs', starter: '30+', gold: '50+', zenith: '70+' },
-    { name: 'Trading Signals', starter: false, gold: true, zenith: 'AI-Powered' },
-    { name: 'Account Manager', starter: false, gold: true, zenith: 'Dedicated' },
+    { name: 'Principal Range', starter: '$100 - $999', professional: '$1,000 - $4,999', premium: '$5,000 - $19,999', elite: '$20,000 - $100,000' },
+    { name: 'Daily ROI Accrued', starter: '12%', professional: '15%', premium: '20%', elite: '30%' },
+    { name: 'Lockup Period', starter: '30 Days', professional: '30 Days', premium: '30 Days', elite: '30 Days' },
+    { name: 'Trading Signals', starter: false, professional: true, premium: 'AI-Powered', elite: 'AI + Priority' },
+    { name: 'Account Manager', starter: false, professional: false, premium: true, elite: 'Dedicated' },
+    { name: 'Support Tier', starter: 'Email Support', professional: 'Priority Support', premium: 'VIP Support', elite: '24/7 Concierge' },
   ];
 
   const renderValue = (val: string | boolean) => {
@@ -35,7 +36,7 @@ export default function FeatureComparison() {
         <X className="h-5 w-5 text-rose-500 mx-auto" />
       );
     }
-    if (val.includes('AI-Powered') || val.includes('Dedicated')) {
+    if (val.includes('AI-Powered') || val.includes('Dedicated') || val.includes('AI + Priority') || val.includes('Concierge')) {
       return (
         <span className="flex items-center justify-center gap-1 font-bold text-amber-500">
           <Check className="h-4 w-4 text-amber-500" /> {val}
@@ -50,7 +51,7 @@ export default function FeatureComparison() {
       {/* All Plans Include banner */}
       <div className="bg-white/60 backdrop-blur-sm border border-purple-100 rounded-3xl p-6 sm:px-12 shadow-sm">
         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-4">
-          All Plans Include
+          All Yield Pools Include
         </span>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {allInclude.map((item, idx) => {
@@ -70,7 +71,7 @@ export default function FeatureComparison() {
       {/* Feature Comparison Table Title */}
       <div className="space-y-3">
         <span className="text-[10px] font-bold text-[#7c3aed] uppercase tracking-widest block">
-          Feature Comparison
+          Yield Pool Comparison
         </span>
       </div>
 
@@ -79,17 +80,20 @@ export default function FeatureComparison() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200/60">
-              <th className="text-left pb-4 text-sm font-bold text-gray-400 uppercase tracking-wider w-1/4">
+              <th className="text-left pb-4 text-sm font-bold text-gray-400 uppercase tracking-wider w-1/5">
                 Features
               </th>
-              <th className="pb-4 text-center text-base font-bold text-gray-800 w-1/4">
-                Starter Plan
+              <th className="pb-4 text-center text-sm font-bold text-gray-800 w-1/5">
+                Starter Pool
               </th>
-              <th className="pb-4 text-center text-base font-bold text-gray-800 w-1/4">
-                Gold Plan
+              <th className="pb-4 text-center text-sm font-bold text-gray-800 w-1/5">
+                Professional
               </th>
-              <th className="pb-4 text-center text-base font-bold text-amber-500 w-1/4">
-                Zenith
+              <th className="pb-4 text-center text-sm font-bold text-[#7c3aed] w-1/5">
+                Premium
+              </th>
+              <th className="pb-4 text-center text-sm font-bold text-amber-500 w-1/5">
+                Elite
               </th>
             </tr>
           </thead>
@@ -103,10 +107,13 @@ export default function FeatureComparison() {
                   {renderValue(feat.starter)}
                 </td>
                 <td className="py-4 text-center text-sm font-medium">
-                  {renderValue(feat.gold)}
+                  {renderValue(feat.professional)}
                 </td>
                 <td className="py-4 text-center text-sm font-medium">
-                  {renderValue(feat.zenith)}
+                  {renderValue(feat.premium)}
+                </td>
+                <td className="py-4 text-center text-sm font-medium">
+                  {renderValue(feat.elite)}
                 </td>
               </tr>
             ))}
@@ -118,111 +125,148 @@ export default function FeatureComparison() {
       <div className="grid grid-cols-1 gap-6 md:hidden">
         {/* Starter Plan Card */}
         <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-sm text-left">
-          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Entry Level</span>
-          <h4 className="font-syne text-xl font-bold text-gray-900 mb-4">Starter Plan</h4>
+          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tier 1</span>
+          <h4 className="font-syne text-xl font-bold text-gray-900 mb-4">Starter Pool</h4>
           <ul className="space-y-3.5 mb-6 text-sm text-gray-600 font-medium">
             <li className="flex justify-between border-b border-gray-100 pb-2">
-              <span>Minimum Deposit</span>
-              <strong className="text-gray-900">$100</strong>
+              <span>Principal limits</span>
+              <strong className="text-gray-900">$100 - $999</strong>
             </li>
             <li className="flex justify-between border-b border-gray-100 pb-2">
-              <span>Spreads From</span>
-              <strong className="text-gray-900">1.5 pips</strong>
+              <span>Daily ROI</span>
+              <strong className="text-gray-900">12%</strong>
             </li>
             <li className="flex justify-between border-b border-gray-100 pb-2">
-              <span>Maximum Leverage</span>
-              <strong className="text-gray-900">1:100</strong>
-            </li>
-            <li className="flex justify-between border-b border-gray-100 pb-2">
-              <span>Currency Pairs</span>
-              <strong className="text-gray-900">30+</strong>
+              <span>Lockup Period</span>
+              <strong className="text-gray-900">30 Days</strong>
             </li>
             <li className="flex justify-between border-b border-gray-100 pb-2">
               <span>Trading Signals</span>
               <span className="text-rose-500 font-bold">✕</span>
             </li>
-            <li className="flex justify-between pb-1">
+            <li className="flex justify-between border-b border-gray-100 pb-2">
               <span>Account Manager</span>
               <span className="text-rose-500 font-bold">✕</span>
+            </li>
+            <li className="flex justify-between pb-1">
+              <span>Support Tier</span>
+              <strong className="text-gray-900 font-bold">Email</strong>
             </li>
           </ul>
           <Link href="/auth/register" className="block w-full">
             <button className="w-full bg-[#f0eee9] hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5">
-              Get Started <ArrowRight className="h-3.5 w-3.5" />
+              Deploy Principal <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </Link>
         </div>
 
-        {/* Gold Plan Card */}
+        {/* Professional Plan Card */}
         <div className="bg-white border border-purple-200 ring-2 ring-purple-500/10 rounded-3xl p-6 shadow-sm text-left">
-          <span className="text-[9px] font-bold text-purple-500 uppercase tracking-widest block mb-1">Recommended</span>
-          <h4 className="font-syne text-xl font-bold text-gray-900 mb-4">Gold Plan</h4>
+          <span className="text-[9px] font-bold text-purple-500 uppercase tracking-widest block mb-1">Tier 2</span>
+          <h4 className="font-syne text-xl font-bold text-gray-900 mb-4">Professional</h4>
           <ul className="space-y-3.5 mb-6 text-sm text-gray-600 font-medium">
             <li className="flex justify-between border-b border-gray-100 pb-2">
-              <span>Minimum Deposit</span>
-              <strong className="text-gray-900">$3,000</strong>
+              <span>Principal limits</span>
+              <strong className="text-gray-900">$1,000 - $4,999</strong>
             </li>
             <li className="flex justify-between border-b border-gray-100 pb-2">
-              <span>Spreads From</span>
-              <strong className="text-gray-900">0.5 pips</strong>
+              <span>Daily ROI</span>
+              <strong className="text-gray-900">15%</strong>
             </li>
             <li className="flex justify-between border-b border-gray-100 pb-2">
-              <span>Maximum Leverage</span>
-              <strong className="text-gray-900">1:300</strong>
-            </li>
-            <li className="flex justify-between border-b border-gray-100 pb-2">
-              <span>Currency Pairs</span>
-              <strong className="text-gray-900">50+</strong>
+              <span>Lockup Period</span>
+              <strong className="text-gray-900">30 Days</strong>
             </li>
             <li className="flex justify-between border-b border-gray-100 pb-2">
               <span>Trading Signals</span>
-              <span className="text-emerald-500 font-bold">✓</span>
+              <span className="text-emerald-500 font-bold">✓ Standard</span>
+            </li>
+            <li className="flex justify-between border-b border-gray-100 pb-2">
+              <span>Account Manager</span>
+              <span className="text-rose-500 font-bold">✕</span>
             </li>
             <li className="flex justify-between pb-1">
-              <span>Account Manager</span>
-              <span className="text-emerald-500 font-bold">✓</span>
+              <span>Support Tier</span>
+              <strong className="text-gray-900 font-bold">Priority</strong>
             </li>
           </ul>
           <Link href="/auth/register" className="block w-full">
             <button className="w-full bg-[#7c3aed] hover:bg-[#6b2fd5] text-white font-bold py-3 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5">
-              Get Started <ArrowRight className="h-3.5 w-3.5" />
+              Deploy Principal <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </Link>
         </div>
 
-        {/* Zenith Card */}
-        <div className="bg-slate-950 border border-slate-900 rounded-3xl p-6 shadow-md text-left text-white">
-          <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest block mb-1">VIP Plan</span>
-          <h4 className="font-syne text-xl font-bold text-white mb-4">Zenith Plan</h4>
+        {/* Premium Plan Card */}
+        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-md text-left text-white">
+          <span className="text-[9px] font-bold text-purple-400 uppercase tracking-widest block mb-1">Tier 3</span>
+          <h4 className="font-syne text-xl font-bold text-white mb-4">Premium</h4>
           <ul className="space-y-3.5 mb-6 text-sm text-slate-300 font-medium">
             <li className="flex justify-between border-b border-slate-800 pb-2">
-              <span>Minimum Deposit</span>
-              <strong className="text-white">$10,000</strong>
+              <span>Principal limits</span>
+              <strong className="text-white">$5,000 - $19,999</strong>
             </li>
             <li className="flex justify-between border-b border-slate-800 pb-2">
-              <span>Spreads From</span>
-              <strong className="text-white">0.1 pips</strong>
+              <span>Daily ROI</span>
+              <strong className="text-white">20%</strong>
             </li>
             <li className="flex justify-between border-b border-slate-800 pb-2">
-              <span>Maximum Leverage</span>
-              <strong className="text-white">1:500</strong>
-            </li>
-            <li className="flex justify-between border-b border-slate-800 pb-2">
-              <span>Currency Pairs</span>
-              <strong className="text-white">70+</strong>
+              <span>Lockup Period</span>
+              <strong className="text-white">30 Days</strong>
             </li>
             <li className="flex justify-between border-b border-slate-800 pb-2">
               <span>Trading Signals</span>
               <span className="text-amber-500 font-bold">✓ AI-Powered</span>
             </li>
-            <li className="flex justify-between pb-1">
+            <li className="flex justify-between border-b border-slate-800 pb-2">
               <span>Account Manager</span>
               <span className="text-amber-500 font-bold">✓ Dedicated</span>
+            </li>
+            <li className="flex justify-between pb-1">
+              <span>Support Tier</span>
+              <strong className="text-white font-bold">VIP Priority</strong>
+            </li>
+          </ul>
+          <Link href="/auth/register" className="block w-full">
+            <button className="w-full bg-[#7c3aed] hover:bg-[#6b2fd5] text-white font-bold py-3 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5">
+              Deploy Principal <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </Link>
+        </div>
+
+        {/* Elite Card */}
+        <div className="bg-slate-950 border border-amber-500/30 rounded-3xl p-6 shadow-xl text-left text-white ring-1 ring-amber-500/10">
+          <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest block mb-1">Tier 4</span>
+          <h4 className="font-syne text-xl font-bold text-amber-500 mb-4">Elite</h4>
+          <ul className="space-y-3.5 mb-6 text-sm text-slate-300 font-medium">
+            <li className="flex justify-between border-b border-slate-850 pb-2 border-slate-800">
+              <span>Principal limits</span>
+              <strong className="text-white">$20,000 - $100,000</strong>
+            </li>
+            <li className="flex justify-between border-b border-slate-850 pb-2 border-slate-800">
+              <span>Daily ROI</span>
+              <strong className="text-amber-500">30%</strong>
+            </li>
+            <li className="flex justify-between border-b border-slate-850 pb-2 border-slate-800">
+              <span>Lockup Period</span>
+              <strong className="text-white">30 Days</strong>
+            </li>
+            <li className="flex justify-between border-b border-slate-850 pb-2 border-slate-800">
+              <span>Trading Signals</span>
+              <span className="text-amber-500 font-bold">✓ AI + Priority</span>
+            </li>
+            <li className="flex justify-between border-b border-slate-850 pb-2 border-slate-800">
+              <span>Account Manager</span>
+              <span className="text-amber-500 font-bold">✓ 24/7 Personal</span>
+            </li>
+            <li className="flex justify-between pb-1">
+              <span>Support Tier</span>
+              <strong className="text-amber-500 font-bold">24/7 Concierge</strong>
             </li>
           </ul>
           <Link href="/auth/register" className="block w-full">
             <button className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-3 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5">
-              Get Started <ArrowRight className="h-3.5 w-3.5" />
+              Deploy Principal <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </Link>
         </div>
@@ -231,12 +275,14 @@ export default function FeatureComparison() {
       {/* Pricing Question and CTA Button */}
       <div className="space-y-4 pt-4">
         <p className="text-sm font-medium text-gray-500">
-          Not Sure Which Plan to Choose? <br />
-          Start with our demo account and upgrade anytime
+          Not Sure Which Yield Pool to Choose? <br />
+          Start with our Starter Pool and scale up anytime.
         </p>
-        <button className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-8 py-3.5 rounded-2xl transition-all duration-300 shadow-md shadow-amber-500/10 text-sm">
-          Contact Sales
-        </button>
+        <Link href="/auth/register">
+          <button className="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-8 py-3.5 rounded-2xl transition-all duration-300 shadow-md shadow-amber-500/10 text-sm mt-3">
+            Open Free Account
+          </button>
+        </Link>
       </div>
     </div>
   );
