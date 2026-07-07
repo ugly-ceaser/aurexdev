@@ -32,9 +32,10 @@ const PAIR_CONFIGS: Record<string, PairConfig> = {
 };
 
 const DEFAULT_PACKAGES: Package[] = [
-  { name: 'Starter Pool', minAmount: 100, maxAmount: 2999, roiPercentage: 2.0, durationDays: 30 },
-  { name: 'Professional Pool', minAmount: 3000, maxAmount: 9999, roiPercentage: 2.5, durationDays: 60 },
-  { name: 'Zenith Pool', minAmount: 10000, maxAmount: 250000, roiPercentage: 3.0, durationDays: 90 },
+  { name: 'Starter', minAmount: 100, maxAmount: 999, roiPercentage: 12.0, durationDays: 30 },
+  { name: 'Professional', minAmount: 1000, maxAmount: 4999, roiPercentage: 15.0, durationDays: 30 },
+  { name: 'Premium', minAmount: 5000, maxAmount: 19999, roiPercentage: 20.0, durationDays: 30 },
+  { name: 'Elite', minAmount: 20000, maxAmount: 250000, roiPercentage: 30.0, durationDays: 30 },
 ];
 
 export default function TradingCalculator({ packages = [] }: TradingCalculatorProps) {
